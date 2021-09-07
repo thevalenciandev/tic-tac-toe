@@ -23,7 +23,7 @@ private:
     void DrawBoard()
     {
         clear(); // Clear screen.
-        printw("Welcome to tic tac toe.\n\n");
+        addstr("Welcome to TIC TAC TOE\n\n");
 
         // Print grid
         printw("\t%c | %c | %c\n", grid[0], grid[1], grid[2]);
@@ -45,7 +45,7 @@ private:
     }
     int GetNumber()
     {
-        printw("Where will you move? (1-9): ");
+        printw("%c, where will you move? (1-9): ", turn);
         refresh(); // Draw.
         int number = getch() - '0';
         return number - 1; // 0-based array
@@ -87,7 +87,7 @@ private:
     }
     void AnnounceWinner()
     {
-        printw("\n\nWe have a winner!!!");
+        printw("\n\n%c wins!!!", turn);
         refresh();
     }
     char PlayGame()
