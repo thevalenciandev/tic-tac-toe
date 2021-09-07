@@ -6,6 +6,7 @@ const char X = 'X';
 const char O = 'O';
 const char EMPTY = ' ';
 const char NO_ONE = 'N';
+const char TIE = 'T';
 
 class TicTacToe
 {
@@ -45,7 +46,7 @@ private:
     }
     int GetNumber()
     {
-        printw("%c, where will you move? (1-9): ", turn);
+        printw("\n%c, where will you move? (1-9): ", turn);
         refresh(); // Draw.
         int number = getch() - '0';
         return number - 1; // 0-based array
@@ -66,7 +67,7 @@ private:
     {
         turn = turn == X ? O : X;
     }
-    char Winner()
+    char ComputeOutcome()
     {
         // all possible Winning Rows
         const int WR[8][3] = {{0, 1, 2},
@@ -83,19 +84,31 @@ private:
                 // we have a winner: return who
                 return WR[i][0];
 
-        return NO_ONE;
+        for (int i = 0; i < 9; i++)
+            if (grid[i] == EMPTY)
+                return NO_ONE;
+
+        return TIE;
     }
     void AnnounceWinner()
     {
-        printw("\n\n%c wins!!!", turn);
+        printw("\n%c wins!!!", turn);
+        refresh();
+    }
+    void AnnounceTie()
+    {
+        addstr("\nWe have a tie!");
         refresh();
     }
     char PlayGame()
     {
         InitBoard();
         DrawBoard();
-        while (Winner() == NO_ONE)
+
+        char outcome;
+        do
         {
+            SwapTurns();
             int position = AskNumber();
             if (turn == X)
                 HumanMove(position);
@@ -103,10 +116,13 @@ private:
                 MachineMove(position);
 
             DrawBoard();
-            SwapTurns();
-        }
+            outcome = ComputeOutcome();
+        } while (outcome == NO_ONE);
 
-        AnnounceWinner();
+        if (outcome == TIE)
+            AnnounceTie();
+        else
+            AnnounceWinner();
 
         return AskForAnotherGame();
     }
