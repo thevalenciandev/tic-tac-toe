@@ -13,6 +13,7 @@ class TicTacToe
 private:
     char *grid;
     char turn; // Who's turn is it now
+    int scoreX, scoreO;
     void InitGraphics()
     {
         // Using ncurses lib.
@@ -29,6 +30,7 @@ private:
     {
         clear(); // Clear screen.
         addstr("Welcome to TIC TAC TOE\n\n");
+        printw("\tX %d - %d O\n\n", scoreX, scoreO);
 
         // Print grid
         printw("\t%c | %c | %c\n", grid[0], grid[1], grid[2]);
@@ -96,6 +98,10 @@ private:
     }
     void AnnounceWinner()
     {
+        if (turn == X) scoreX++;
+        else scoreO++;
+
+        DrawBoard(); // Re-draw so we can also see the new score
         printw("\n%c wins!!!", turn);
         refresh();
     }
@@ -146,6 +152,8 @@ public:
         // Randomise whether X or O starts
         srand(time(NULL));
         turn = rand() % 2 == 0 ? X : O;
+
+        scoreX = scoreO = 0;
     }
     ~TicTacToe()
     {
