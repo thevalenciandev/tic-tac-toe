@@ -11,7 +11,6 @@ const char TIE = 'T';
 class TicTacToe
 {
 private:
-    bool invalidpos;
     char *grid;
     char turn; // Who's turn is it now
     void InitGraphics()
@@ -21,6 +20,11 @@ private:
         cbreak();  // read character without having to press ENTER (disable line buffering)
     }
     void TearDownGraphics() { endwin(); /* end curses mode. Failure to do so will result in weird terminal behaviour.*/ }
+    void InitBoard()
+    {
+        for (int i = 0; i < 9; i++)
+            grid[i] = EMPTY;
+    }
     void DrawBoard()
     {
         clear(); // Clear screen.
@@ -55,11 +59,11 @@ private:
     {
         return pos < 0 || pos > 8 || grid[pos] != EMPTY;
     }
-    void HumanMove(int pos)
+    void MoveX(int pos)
     {
         grid[pos] = X;
     }
-    void MachineMove(int pos)
+    void MoveO(int pos)
     {
         grid[pos] = O;
     }
@@ -100,7 +104,7 @@ private:
         addstr("\nWe have a tie!");
         refresh();
     }
-    char PlayGame()
+    void PlayGame()
     {
         InitBoard();
         DrawBoard();
@@ -111,9 +115,9 @@ private:
             SwapTurns();
             int position = AskNumber();
             if (turn == X)
-                HumanMove(position);
+                MoveX(position);
             else
-                MachineMove(position);
+                MoveO(position);
 
             DrawBoard();
             outcome = ComputeOutcome();
@@ -123,8 +127,6 @@ private:
             AnnounceTie();
         else
             AnnounceWinner();
-
-        return AskForAnotherGame();
     }
     char AskForAnotherGame()
     {
@@ -132,21 +134,16 @@ private:
         refresh();
         return getch();
     }
-    void InitBoard()
-    {
-        for (int i = 0; i < 9; i++)
-            grid[i] = EMPTY;
-    }
 
 public:
     TicTacToe()
     {
         InitGraphics();
 
-        // Create grid and initialise it
+        // Create grid/board
         grid = new char[9];
 
-        // Randomise whether human or machine starts
+        // Randomise whether X or O starts
         srand(time(NULL));
         turn = rand() % 2 == 0 ? X : O;
     }
@@ -160,7 +157,8 @@ public:
         int input;
         do
         {
-            input = PlayGame();
+            PlayGame();
+            input = AskForAnotherGame();
         } while (input != 'q' && input != 'Q');
     }
 };
